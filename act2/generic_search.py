@@ -40,7 +40,8 @@ def binary_contains(sequence: Sequence[C], key: C) -> bool:
 
 def dfs(initial: T, goal_test: Collable[[T], bool], successors: Collable[[T], List[T]]) -> Optional[Node[T]]:
     frontiner: Stack[Node[T]] = Stack()
-    frontiner.push(Node(initial, None))
+    n: Node = Node(initial, None)
+    frontiner.push(n)
     explored: Set[T] = {initial}
 
     while not frontiner.empty:
@@ -55,21 +56,30 @@ def dfs(initial: T, goal_test: Collable[[T], bool], successors: Collable[[T], Li
             frontiner.push(Node(child, current_node))
     return None
 
+def node_to_path(node: Node[T]) -> List[T]:
+    path: List[T] = [node.state]
+    while node.parent is not None:
+        node = node.parent
+        path.append(node.state)
+    path.reverse()
+    return path
+
 class Stack(Generic[T]):
     def __init__(self) -> None:
         self._container: List[T] = []
     @property
     def empty(self) -> bool:
-        return not self.container
-    def push(self) -> T:
+        return not self._container
+    def push(self, item: T) -> T:
         self._container.append(item)
     def pop(self) -> T:
-        return self_container.pop()
+        return self._container.pop()
     def __repr__(self) -> self:
         return repr(self._container)
 
 class Node(Generic[T]):
-    def __init__(self, state: T, parent: Optional[Node], cost:float = 0.0, heuristic: float = 0.0) -> None:
+    def __init__(self, state: T, parent: Optional[Node],
+                 cost:float = 0.0, heuristic: float = 0.0) -> None:
         self.state: T = state
         self.parent: Optional[Node] = parent
         self.cost: float = cost
