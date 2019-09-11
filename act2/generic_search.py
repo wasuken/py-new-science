@@ -56,6 +56,22 @@ def dfs(initial: T, goal_test: Collable[[T], bool], successors: Collable[[T], Li
             frontiner.push(Node(child, current_node))
     return None
 
+def bfs(initial: T, goal_test: Callable[[T], bool], successors: Callable[[T], List[T]]) -> Optional[Node[T]]:
+    frontier: Queue[Node[T]] = Queue()
+    frontier.push(Node(initial, None))
+    explored: Set[T] = {initial}
+
+    while not frontier.empty:
+        current_node: Node[T] = frontier.pop()
+        current_state: T = current_node.state
+        if goal_test(current_state):
+            return current_node
+        for child in successors(current_state):
+            if child in explored:
+                continue
+            explored.add(child)
+            frontier.push(Node(child, current_node))
+
 def node_to_path(node: Node[T]) -> List[T]:
     path: List[T] = [node.state]
     while node.parent is not None:
@@ -86,6 +102,22 @@ class Node(Generic[T]):
         self.heuristic: float = heuristic
     def __lt__(self, other: Node) -> bool:
         return (self.cost + self.heuristic) < (other.cost + other.heuristic)
+
+class Queue(Generic[T]):
+    def __init__(self) -> None:
+        self._container: Deque[T] = Deque()
+    @property
+    def empty(self) -> bool:
+        return not self._container
+
+    def push(self, item: T) -> None:
+        self._container.append(item)
+
+    def pop(self) -> T:
+        return self._container.popleft()
+
+    def __repr__(self) -> self:
+        return repr(self._container)
 
 if __name__== '__main__':
     print(linear_contains([1, 5, 15, 15, 20], 5))
